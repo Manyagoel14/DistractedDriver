@@ -1,13 +1,13 @@
 import os
-import shutil
 import pandas as pd
 
-test_act_path = "./test_actual"
 test_path = "./test"
+test_act_path = "./test_actual"
 train_path = "./csv_files/train.csv"
 image_folder = "./dataset/imgs/train"
-os.makedirs(test_act_path, exist_ok=True)
+
 os.makedirs(test_path, exist_ok=True)
+os.makedirs(test_act_path, exist_ok=True)
 
 df = pd.read_csv(train_path)
 
@@ -26,32 +26,31 @@ class_name = {
 
 grouped = df.groupby("ClassName")
 
+test_rows = []
+test_actual_rows = []
+
 for cls, group in grouped:
-    subset = group.sample(n=100, random_state=42)
+    subset = group.sample(n=1000, random_state=42)
 
     for idx, row in subset.iterrows():
         img_name = row["Filename"]
         label = row["ClassName"]
 
-        # Normalize slashes
-        clean = img_name.replace("\\", "/")
+        # ---------- test.csv ----------
+        test_rows.append({
+            "path": os.path.join(img_name).replace("\\", "/"),
+            "class_name": "test"
+        })
 
-        # Extract path after '/dataset/imgs/train/'
-        marker = "/dataset/imgs/train/"
-        clean = clean.split(marker)[-1]     # "c7/img_55214.jpg"
+        # ---------- test_actual.csv ----------
+        new_name = img_name.replace(".jpg", "") + "_" + class_name[label] + ".jpg"
+        test_actual_rows.append({
+            "path": os.path.join(img_name).replace("\\", "/"),
+            "actual_name": label
+        })
 
-        # Build local source path
-        src = os.path.join(image_folder, clean).replace("\\", "/")
+# Save CSV files
+pd.DataFrame(test_rows).to_csv("test.csv", index=False)
+pd.DataFrame(test_actual_rows).to_csv("test_actual.csv", index=False)
 
-
-        # Copy original image to test/
-        base = clean.split("/")[-1]         # img_55214.jpg
-        shutil.copy(src, os.path.join(test_path, base))
-
-        # Create renamed file for test_actual/
-        new_name = base.replace(".jpg", "") + "_" + class_name[label] + ".jpg"
-        dst = os.path.join(test_act_path, new_name)
-
-        shutil.copy(src, dst)
-
-print("Done! 100 files per class copied.")
+print("Done! CSV files created.")
