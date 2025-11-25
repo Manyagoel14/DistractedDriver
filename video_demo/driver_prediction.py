@@ -1,31 +1,38 @@
 import os
 import json
-from keras.models import load_model
-import pandas as pd
-import pickle
-import numpy as np
 import shutil
+import pickle
 
-from keras.preprocessing import image                  
-from tqdm.notebook import tqdm
-from PIL import ImageFile                            
+import numpy as np
+import pandas as pd
 
-BASE_MODEL_PATH = os.path.join(os.getcwd(),"model")
-PICKLE_DIR = os.path.join(os.getcwd(),"pickle_files")
-JSON_DIR = os.path.join(os.getcwd(),"json_files")
+# Pillow fix for truncated image loading
+from PIL import Image, ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+# TensorFlow/Keras imports — updated for TF 2.13+ and Python 3.11
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing import image
+
+# tqdm fix for Windows (notebook version often fails)
+from tqdm import tqdm                         
+
+PICKLE_DIR = f"./pickle_files"
+BASE_MODEL_PATH = f"./model"
+JSON_DIR = f"./json_files"
 
 if not os.path.exists(JSON_DIR):
     os.makedirs(JSON_DIR)
-
-BEST_MODEL = os.path.join(BASE_MODEL_PATH,"self_trained","distracted-23-1.00.hdf5")
+    
+BEST_MODEL = "D:\DistractedDriver\model\cnn_batchwise_best_model.keras"
 model = load_model(BEST_MODEL)
 
-with open(os.path.join(PICKLE_DIR,"labels_list.pkl"),"rb") as handle:
+with open("D:\DistractedDriver\pickle_files\labels_list_cnn_batchwise.pkl","rb") as handle:
     labels_id = pickle.load(handle)
 
 def path_to_tensor(img_path):
     # loads RGB image as PIL.Image.Image type
-    img = image.load_img(img_path, target_size=(128, 128))
+    img = image.load_img(img_path, target_size=(224, 224))
     # convert PIL.Image.Image type to 3D tensor with shape (224, 224, 3)
     x = image.img_to_array(img)
     # convert 3D tensor to 4D tensor with shape (1, 224, 224, 3) and return 4D tensor
@@ -52,8 +59,6 @@ def predict_result(image_tensor):
     ypred_class = int(ypred_class)
     print(id_labels[ypred_class])
 
-
-    #to create a human readable and understandable class_name 
     class_name = dict()
     class_name["c0"] = "SAFE_DRIVING"
     class_name["c1"] = "TEXTING_RIGHT"
@@ -76,4 +81,3 @@ def predict_result(image_tensor):
         print(label)
     
     return label
-
