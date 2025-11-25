@@ -48,7 +48,10 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 # image_tensor = paths_to_tensor(image_path).astype('float32')/255 - 0.5
 
 def predict_result(image_tensor):
-
+    # below are for shallow deep non batch: 64 and shallow non batch: 224
+    # feature_extractor = VGG16(include_top=False, input_shape=(224, 224,3), weights='imagenet')
+    # test_features = feature_extractor.predict(image_tensor)
+    # ypred_test = model.predict(test_features)
     ypred_test = model.predict(image_tensor,verbose=1)
     ypred_class = np.argmax(ypred_test,axis=1)
     print(ypred_class)
