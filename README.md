@@ -69,6 +69,11 @@ All models classify **10 driver states** with ~**99% test accuracy**.
 | VGG16 (Non-Batch) | 99.86%        |
 | VGG16 (Batchwise) | 99.46%        |
 
+## CNN Batchwise Video Demo
+
+[Click to watch the demo](assets/cnn_batchwise_demo.mp4)
+
+
 **Key Insights**
 
 * Batchwise training → smoother convergence
