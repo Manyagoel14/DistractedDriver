@@ -71,7 +71,7 @@ All models classify **10 driver states** with ~**99% test accuracy**.
 
 ## CNN Batchwise Video Demo
 
-[Click to watch the demo](assets/cnn_batchwise_demo.mp4)
+[Click to watch the demo](assets/cnn_batchwise_output_video.mp4)
 
 
 **Key Insights**
